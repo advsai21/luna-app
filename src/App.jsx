@@ -25,6 +25,14 @@ const MOODS = [
   { emoji: "🌕", label: "Good", value: 5 },
 ];
 
+const MOOD_AVATAR = {
+  1: { emoji: "🌑", glow: "rgba(60,40,100,0.4)", animation: "pulse-slow", message: "I see you. Even in the dark, you're here. That matters." },
+  2: { emoji: "🌒", glow: "rgba(80,50,120,0.5)", animation: "float-slow", message: "Heavy days are real. You don't have to pretend otherwise." },
+  3: { emoji: "🌓", glow: "rgba(120,80,180,0.6)", animation: "float", message: "Okay is enough. Okay is actually quite brave." },
+  4: { emoji: "🌔", glow: "rgba(160,120,220,0.7)", animation: "float", message: "There's a softness in you tonight. I hope you feel it too." },
+  5: { emoji: "🌕", glow: "rgba(200,170,255,0.8)", animation: "bounce", message: "You're glowing tonight. I hope it stays a while. 🌕" },
+};
+
 const AFFIRMATIONS = [
   "Your feelings are valid, even the ones you can't name yet.",
   "You don't have to be okay today. Just be here.",
@@ -60,6 +68,44 @@ const storage = {
     catch {}
   },
 };
+
+function FloatingMoon({ mood }) {
+  const [showMessage, setShowMessage] = useState(false);
+  const avatar = MOOD_AVATAR[mood?.value || 3];
+
+  return (
+    <>
+      <div onClick={() => setShowMessage(!showMessage)} style={{
+        position: "fixed", bottom: 90, right: 20, zIndex: 99,
+        width: 52, height: 52, borderRadius: "50%",
+        background: `radial-gradient(circle, ${avatar.glow}, transparent 70%)`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 32, cursor: "pointer",
+        filter: `drop-shadow(0 0 12px ${avatar.glow})`,
+        animation: `${avatar.animation} 3s ease-in-out infinite`,
+        WebkitTapHighlightColor: "transparent",
+        transition: "filter 0.5s ease",
+      }}>
+        {avatar.emoji}
+      </div>
+
+      {showMessage && (
+        <div onClick={() => setShowMessage(false)} style={{
+          position: "fixed", bottom: 155, right: 16, zIndex: 99,
+          maxWidth: 220, padding: "14px 16px", borderRadius: "16px 16px 4px 16px",
+          background: "rgba(20,15,40,0.95)", border: `1px solid ${avatar.glow}`,
+          backdropFilter: "blur(12px)", animation: "fadeUp 0.3s ease",
+          cursor: "pointer",
+        }}>
+          <p style={{ fontFamily: "var(--font-display)", fontSize: 14, lineHeight: 1.6, fontStyle: "italic", color: "rgba(255,255,255,0.85)" }}>
+            {avatar.message}
+          </p>
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 8, fontFamily: "var(--font-body)" }}>tap to close</p>
+        </div>
+      )}
+    </>
+  );
+}
 
 function StarField() {
   const stars = Array.from({ length: 80 }, (_, i) => ({
@@ -130,11 +176,8 @@ function JournalEntry({ onSave }) {
         background: saved ? "rgba(100,200,140,0.25)" : "rgba(140,100,200,0.3)",
         color: saved ? "rgba(140,240,180,0.9)" : "rgba(200,170,255,0.9)",
         fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer",
-        transition: "all 0.3s ease", letterSpacing: 0.5,
-        WebkitTapHighlightColor: "transparent",
-      }}>
-        {saved ? "✓ saved" : "release it →"}
-      </button>
+        transition: "all 0.3s ease", letterSpacing: 0.5, WebkitTapHighlightColor: "transparent",
+      }}>{saved ? "✓ saved" : "release it →"}</button>
     </div>
   );
 }
@@ -157,9 +200,7 @@ function ChatBubble({ msg }) {
         background: isUser ? "rgba(120,80,200,0.25)" : "rgba(255,255,255,0.06)",
         border: isUser ? "1px solid rgba(160,120,240,0.25)" : "1px solid rgba(255,255,255,0.07)",
         color: "rgba(255,255,255,0.88)", fontFamily: "var(--font-body)", fontSize: 15, lineHeight: 1.65,
-      }}>
-        {msg.content}
-      </div>
+      }}>{msg.content}</div>
     </div>
   );
 }
@@ -280,9 +321,7 @@ function MoonVault() {
     <div style={{ padding: "52px 24px 24px", animation: "fadeUp 0.4s ease" }}>
       <div style={{ marginBottom: 32 }}>
         <p style={{ fontSize: 12, color: "rgba(160,120,255,0.7)", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>for you</p>
-        <h2 style={{ fontFamily: "var(--font-display)", fontSize: 38, fontWeight: 300, lineHeight: 1.2 }}>
-          <em>Moon Vault</em> 🌙
-        </h2>
+        <h2 style={{ fontFamily: "var(--font-display)", fontSize: 38, fontWeight: 300, lineHeight: 1.2 }}><em>Moon Vault</em> 🌙</h2>
         <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 6 }}>words written just for you</p>
       </div>
       {poems.length === 0 ? (
@@ -300,12 +339,8 @@ function MoonVault() {
               WebkitTapHighlightColor: "transparent",
             }}>
               <p style={{ fontSize: 11, color: "rgba(160,120,255,0.6)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>{p.date}</p>
-              <h3 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 300, fontStyle: "italic", color: "rgba(255,255,255,0.9)", marginBottom: 10 }}>
-                {p.title}
-              </h3>
-              <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                {p.content}
-              </p>
+              <h3 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 300, fontStyle: "italic", color: "rgba(255,255,255,0.9)", marginBottom: 10 }}>{p.title}</h3>
+              <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{p.content}</p>
             </button>
           ))}
         </div>
@@ -340,8 +375,7 @@ function AdminPanel({ onClose }) {
       date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       createdAt: Date.now(),
     });
-    setSaving(false);
-    setSaved(true);
+    setSaving(false); setSaved(true);
     setTitle(""); setContent(""); setNote("");
     loadPoems();
     setTimeout(() => setSaved(false), 2000);
@@ -362,26 +396,21 @@ function AdminPanel({ onClose }) {
         style={{
           padding: "14px 18px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)",
           background: "rgba(255,255,255,0.05)", color: "white", fontFamily: "var(--font-body)",
-          fontSize: 16, outline: "none", width: "100%", maxWidth: 300, textAlign: "center",
-          WebkitAppearance: "none",
+          fontSize: 16, outline: "none", width: "100%", maxWidth: 300, textAlign: "center", WebkitAppearance: "none",
         }}
       />
       <div style={{ display: "flex", gap: 10 }}>
         <button onClick={() => setAuthed(password === ADMIN_PASSWORD)} style={{
           padding: "12px 28px", borderRadius: 10, border: "none",
           background: "rgba(120,80,200,0.4)", color: "rgba(200,170,255,0.9)",
-          fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer",
-          WebkitTapHighlightColor: "transparent",
+          fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer", WebkitTapHighlightColor: "transparent",
         }}>enter →</button>
         <button onClick={onClose} style={{
           padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)",
-          background: "none", color: "var(--muted)", fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer",
-          WebkitTapHighlightColor: "transparent",
+          background: "none", color: "var(--muted)", fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer", WebkitTapHighlightColor: "transparent",
         }}>cancel</button>
       </div>
-      {password && password !== ADMIN_PASSWORD && (
-        <p style={{ fontSize: 12, color: "rgba(255,100,100,0.7)" }}>wrong password</p>
-      )}
+      {password && password !== ADMIN_PASSWORD && <p style={{ fontSize: 12, color: "rgba(255,100,100,0.7)" }}>wrong password</p>}
     </div>
   );
 
@@ -394,35 +423,20 @@ function AdminPanel({ onClose }) {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="poem title..."
-            style={{
-              padding: "14px 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)",
-              background: "rgba(255,255,255,0.04)", color: "white", fontFamily: "var(--font-display)",
-              fontSize: 18, outline: "none", WebkitAppearance: "none",
-            }}
+            style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "white", fontFamily: "var(--font-display)", fontSize: 18, outline: "none", WebkitAppearance: "none" }}
           />
           <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="write your poem here..."
-            style={{
-              padding: "16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)",
-              background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-display)",
-              fontSize: 16, lineHeight: 2, resize: "none", height: 220, outline: "none", WebkitAppearance: "none",
-            }}
+            style={{ padding: "16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-display)", fontSize: 16, lineHeight: 2, resize: "none", height: 220, outline: "none", WebkitAppearance: "none" }}
           />
           <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="a little note for her (optional)..."
-            style={{
-              padding: "14px 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)",
-              background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-body)",
-              fontSize: 14, outline: "none", fontStyle: "italic", WebkitAppearance: "none",
-            }}
+            style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-body)", fontSize: 14, outline: "none", fontStyle: "italic", WebkitAppearance: "none" }}
           />
           <button onClick={handleSave} style={{
             padding: "14px", borderRadius: 12, border: "none",
             background: saved ? "rgba(80,180,120,0.3)" : "rgba(120,80,200,0.4)",
             color: saved ? "rgba(120,220,160,0.9)" : "rgba(200,170,255,0.9)",
-            fontFamily: "var(--font-body)", fontSize: 15, cursor: "pointer", transition: "all 0.3s",
-            WebkitTapHighlightColor: "transparent",
-          }}>
-            {saving ? "saving..." : saved ? "✓ published to MoonVault" : "publish to MoonVault →"}
-          </button>
+            fontFamily: "var(--font-body)", fontSize: 15, cursor: "pointer", transition: "all 0.3s", WebkitTapHighlightColor: "transparent",
+          }}>{saving ? "saving..." : saved ? "✓ published to MoonVault" : "publish to MoonVault →"}</button>
         </div>
         {poems.length > 0 && (
           <>
@@ -434,11 +448,7 @@ function AdminPanel({ onClose }) {
                     <p style={{ fontFamily: "var(--font-display)", fontSize: 16, fontStyle: "italic", color: "rgba(255,255,255,0.85)" }}>{p.title}</p>
                     <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>{p.date}</p>
                   </div>
-                  <button onClick={() => handleDelete(p.id)} style={{
-                    background: "none", border: "1px solid rgba(255,80,80,0.2)", borderRadius: 8,
-                    color: "rgba(255,100,100,0.6)", cursor: "pointer", padding: "8px 14px",
-                    fontSize: 12, fontFamily: "var(--font-body)", WebkitTapHighlightColor: "transparent",
-                  }}>delete</button>
+                  <button onClick={() => handleDelete(p.id)} style={{ background: "none", border: "1px solid rgba(255,80,80,0.2)", borderRadius: 8, color: "rgba(255,100,100,0.6)", cursor: "pointer", padding: "8px 14px", fontSize: 12, fontFamily: "var(--font-body)", WebkitTapHighlightColor: "transparent" }}>delete</button>
                 </div>
               ))}
             </div>
@@ -459,6 +469,10 @@ export default function Luna() {
   const [journals, setJournals] = useState(() => storage.get("luna_journals", []));
   const [moodHistory, setMoodHistory] = useState(() => storage.get("luna_moods", []));
 
+  // Load last logged mood on startup
+  const lastMood = moodHistory.length > 0 ? MOODS.find(m => m.value === moodHistory[0].value) || MOODS[2] : MOODS[2];
+  const [currentMood, setCurrentMood] = useState(lastMood);
+
   const handleMoonTap = () => {
     const next = adminTaps + 1;
     setAdminTaps(next);
@@ -478,6 +492,7 @@ export default function Luna() {
     const updated = [entry, ...moodHistory];
     setMoodHistory(updated);
     storage.set("luna_moods", updated);
+    setCurrentMood(mood);
     setMoodSaved(true);
     setTimeout(() => setMoodSaved(false), 2000);
   };
@@ -506,13 +521,17 @@ export default function Luna() {
         @keyframes twinkle { 0%,100%{opacity:0;transform:scale(.8)} 50%{opacity:.7;transform:scale(1.2)} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
         @keyframes pulse { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
+        @keyframes pulse-slow { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.08);opacity:1} }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes float-slow { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+        @keyframes bounce { 0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-12px) scale(1.1)} 60%{transform:translateY(-8px) scale(1.05)} }
         @keyframes shimmer { from{opacity:.6} to{opacity:1} }
         ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
         input, textarea, button { font-family: inherit; }
       `}</style>
 
       {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
+      <FloatingMoon mood={currentMood} />
 
       <div style={{ minHeight: "100dvh", background: "var(--bg)", color: "var(--text)", fontFamily: "var(--font-body)", position: "relative", overflow: "hidden", width: "100%" }}>
         <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
@@ -662,7 +681,7 @@ export default function Luna() {
           background: "rgba(10,10,18,0.95)", backdropFilter: "blur(20px)",
           borderTop: "1px solid rgba(255,255,255,0.07)",
           display: "flex", justifyContent: "space-around",
-          padding: "10px 0 16px",
+          padding: "10px 0",
           paddingBottom: "max(16px, env(safe-area-inset-bottom))",
         }}>
           {tabs.map((t) => (
