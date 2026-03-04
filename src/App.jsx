@@ -69,6 +69,126 @@ const storage = {
   },
 };
 
+function SplashScreen() {
+  const stars = Array.from({ length: 60 }, (_, i) => ({
+    id: i, x: Math.random() * 100, y: Math.random() * 100,
+    size: Math.random() * 2 + 0.5, delay: Math.random() * 4, duration: Math.random() * 3 + 2,
+  }));
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      background: "#0a0a12",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+    }}>
+      <style>{`
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes moonGlow { 0%,100%{filter:drop-shadow(0 0 18px #7c3aed)} 50%{filter:drop-shadow(0 0 36px #a78bfa)} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+      `}</style>
+
+      {/* Stars */}
+      <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }}>
+        {stars.map((s) => (
+          <div key={s.id} style={{
+            position: "absolute", left: `${s.x}%`, top: `${s.y}%`,
+            width: s.size, height: s.size, borderRadius: "50%", background: "white",
+            opacity: 0, animation: `twinkle ${s.duration}s ${s.delay}s infinite ease-in-out`,
+          }} />
+        ))}
+      </div>
+
+      {/* Glow orbs */}
+      <div style={{ position: "fixed", top: "-20%", left: "-10%", width: "60vw", height: "60vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(80,40,140,0.2) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", bottom: "-20%", right: "-10%", width: "50vw", height: "50vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(40,80,140,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+      {/* Logo */}
+      <div style={{ animation: "moonGlow 3s ease-in-out infinite", marginBottom: 8 }}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="160" height="160">
+          <defs>
+            <radialGradient id="bgGlow2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#1a0a2e"/>
+              <stop offset="100%" stopColor="#0a0a12"/>
+            </radialGradient>
+            <radialGradient id="moonGrad2" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stopColor="#c4b5fd"/>
+              <stop offset="40%" stopColor="#8b5cf6"/>
+              <stop offset="100%" stopColor="#3b1f6e"/>
+            </radialGradient>
+            <radialGradient id="glowOuter2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.3"/>
+              <stop offset="100%" stopColor="#7c3aed" stopOpacity="0"/>
+            </radialGradient>
+            <radialGradient id="starGlow2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#e0d4ff"/>
+              <stop offset="100%" stopColor="#a78bfa"/>
+            </radialGradient>
+            <filter id="softGlow2" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="8" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="starFilter2" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <circle cx="200" cy="200" r="200" fill="url(#bgGlow2)"/>
+          <circle cx="185" cy="195" r="130" fill="url(#glowOuter2)"/>
+          <circle cx="185" cy="195" r="100" fill="url(#moonGrad2)" filter="url(#softGlow2)"/>
+          <circle cx="225" cy="178" r="88" fill="#0d0820"/>
+          <circle cx="148" cy="220" r="6" fill="#5b21b6" opacity="0.4"/>
+          <circle cx="162" cy="240" r="4" fill="#4c1d95" opacity="0.3"/>
+          <circle cx="140" cy="200" r="8" fill="#6d28d9" opacity="0.25"/>
+          <circle cx="155" cy="175" r="5" fill="#5b21b6" opacity="0.35"/>
+          <g filter="url(#starFilter2)">
+            <polygon points="295,85 299,97 312,97 302,105 306,117 295,109 284,117 288,105 278,97 291,97" fill="url(#starGlow2)" opacity="0.95"/>
+          </g>
+          <g filter="url(#starFilter2)">
+            <polygon points="195,55 197,62 204,62 198,67 200,74 195,69 190,74 192,67 186,62 193,62" fill="#c4b5fd" opacity="0.85"/>
+          </g>
+          <g filter="url(#starFilter2)">
+            <polygon points="310,270 313,279 322,279 315,285 318,294 310,288 302,294 305,285 298,279 307,279" fill="#a78bfa" opacity="0.9"/>
+          </g>
+          <circle cx="260" cy="120" r="3" fill="#e0d4ff" opacity="0.9" filter="url(#starFilter2)"/>
+          <circle cx="330" cy="160" r="2.5" fill="#c4b5fd" opacity="0.8" filter="url(#starFilter2)"/>
+          <circle cx="340" cy="230" r="2" fill="#a78bfa" opacity="0.7"/>
+          <circle cx="280" cy="310" r="2.5" fill="#c4b5fd" opacity="0.75" filter="url(#starFilter2)"/>
+          <circle cx="120" cy="100" r="2" fill="#e0d4ff" opacity="0.6"/>
+          <g opacity="0.8" filter="url(#starFilter2)">
+            <line x1="260" y1="117" x2="260" y2="123" stroke="#e0d4ff" strokeWidth="1.5"/>
+            <line x1="257" y1="120" x2="263" y2="120" stroke="#e0d4ff" strokeWidth="1.5"/>
+          </g>
+        </svg>
+      </div>
+
+      {/* Text */}
+      <div style={{ textAlign: "center", animation: "slideUp 0.8s 0.3s ease both" }}>
+        <h1 style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 52,
+          fontWeight: 300, fontStyle: "italic", color: "rgba(255,255,255,0.92)",
+          letterSpacing: 8, marginBottom: 10,
+          textShadow: "0 0 30px rgba(139,92,246,0.6)",
+        }}>Luna</h1>
+        <p style={{
+          fontFamily: "'DM Sans', sans-serif", fontSize: 13,
+          color: "rgba(180,150,255,0.7)", letterSpacing: 3, textTransform: "uppercase",
+        }}>your safe space</p>
+      </div>
+
+      {/* Loading dots */}
+      <div style={{ display: "flex", gap: 8, marginTop: 48, animation: "slideUp 0.8s 0.6s ease both" }}>
+        {[0, 1, 2].map((i) => (
+          <div key={i} style={{
+            width: 6, height: 6, borderRadius: "50%",
+            background: "rgba(160,120,255,0.6)",
+            animation: `pulse 1.4s ${i * 0.2}s infinite ease-in-out`,
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FloatingMoon({ mood }) {
   const [showMessage, setShowMessage] = useState(false);
   const avatar = MOOD_AVATAR[mood?.value || 3];
@@ -88,7 +208,6 @@ function FloatingMoon({ mood }) {
       }}>
         {avatar.emoji}
       </div>
-
       {showMessage && (
         <div onClick={() => setShowMessage(false)} style={{
           position: "fixed", bottom: 155, right: 16, zIndex: 99,
@@ -460,6 +579,7 @@ function AdminPanel({ onClose }) {
 }
 
 export default function Luna() {
+  const [splash, setSplash] = useState(true);
   const [tab, setTab] = useState("home");
   const [mood, setMood] = useState(null);
   const [moodSaved, setMoodSaved] = useState(false);
@@ -469,9 +589,13 @@ export default function Luna() {
   const [journals, setJournals] = useState(() => storage.get("luna_journals", []));
   const [moodHistory, setMoodHistory] = useState(() => storage.get("luna_moods", []));
 
-  // Load last logged mood on startup
   const lastMood = moodHistory.length > 0 ? MOODS.find(m => m.value === moodHistory[0].value) || MOODS[2] : MOODS[2];
   const [currentMood, setCurrentMood] = useState(lastMood);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSplash(false), 2800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleMoonTap = () => {
     const next = adminTaps + 1;
@@ -530,8 +654,9 @@ export default function Luna() {
         input, textarea, button { font-family: inherit; }
       `}</style>
 
+      {splash && <SplashScreen />}
       {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
-      <FloatingMoon mood={currentMood} />
+      {!splash && <FloatingMoon mood={currentMood} />}
 
       <div style={{ minHeight: "100dvh", background: "var(--bg)", color: "var(--text)", fontFamily: "var(--font-body)", position: "relative", overflow: "hidden", width: "100%" }}>
         <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
