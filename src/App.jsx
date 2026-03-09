@@ -57,32 +57,44 @@ const storage = {
   set: (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} },
 };
 
-const LunaLogoSVG = ({ size = 160 }) => (
+/* ── LUNA LOGO SVG — unique uid per instance to avoid gradient ID conflicts ── */
+const LunaLogoSVG = ({ size = 160, uid = "default" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width={size} height={size}>
     <defs>
-      <radialGradient id="bgG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#1a0a2e"/><stop offset="100%" stopColor="#0a0a12"/></radialGradient>
-      <radialGradient id="moonG" cx="35%" cy="35%" r="65%"><stop offset="0%" stopColor="#c4b5fd"/><stop offset="40%" stopColor="#8b5cf6"/><stop offset="100%" stopColor="#3b1f6e"/></radialGradient>
-      <radialGradient id="glowG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#7c3aed" stopOpacity="0.3"/><stop offset="100%" stopColor="#7c3aed" stopOpacity="0"/></radialGradient>
-      <radialGradient id="starG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#e0d4ff"/><stop offset="100%" stopColor="#a78bfa"/></radialGradient>
-      <filter id="glow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      <filter id="star"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <radialGradient id={`bgG-${uid}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#1a0a2e"/><stop offset="100%" stopColor="#0a0a12"/>
+      </radialGradient>
+      <radialGradient id={`moonG-${uid}`} cx="35%" cy="35%" r="65%">
+        <stop offset="0%" stopColor="#c4b5fd"/><stop offset="40%" stopColor="#8b5cf6"/><stop offset="100%" stopColor="#3b1f6e"/>
+      </radialGradient>
+      <radialGradient id={`glowG-${uid}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.3"/><stop offset="100%" stopColor="#7c3aed" stopOpacity="0"/>
+      </radialGradient>
+      <radialGradient id={`starG-${uid}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#e0d4ff"/><stop offset="100%" stopColor="#a78bfa"/>
+      </radialGradient>
+      <filter id={`glow-${uid}`}><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id={`star-${uid}`}><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     </defs>
-    <circle cx="200" cy="200" r="200" fill="url(#bgG)"/>
-    <circle cx="185" cy="195" r="130" fill="url(#glowG)"/>
-    <circle cx="185" cy="195" r="100" fill="url(#moonG)" filter="url(#glow)"/>
+    <circle cx="200" cy="200" r="200" fill={`url(#bgG-${uid})`}/>
+    <circle cx="185" cy="195" r="130" fill={`url(#glowG-${uid})`}/>
+    <circle cx="185" cy="195" r="100" fill={`url(#moonG-${uid})`} filter={`url(#glow-${uid})`}/>
     <circle cx="225" cy="178" r="88" fill="#0d0820"/>
     <circle cx="148" cy="220" r="6" fill="#5b21b6" opacity="0.4"/>
     <circle cx="162" cy="240" r="4" fill="#4c1d95" opacity="0.3"/>
     <circle cx="140" cy="200" r="8" fill="#6d28d9" opacity="0.25"/>
     <circle cx="155" cy="175" r="5" fill="#5b21b6" opacity="0.35"/>
-    <g filter="url(#star)"><polygon points="295,85 299,97 312,97 302,105 306,117 295,109 284,117 288,105 278,97 291,97" fill="url(#starG)" opacity="0.95"/></g>
-    <g filter="url(#star)"><polygon points="195,55 197,62 204,62 198,67 200,74 195,69 190,74 192,67 186,62 193,62" fill="#c4b5fd" opacity="0.85"/></g>
-    <g filter="url(#star)"><polygon points="310,270 313,279 322,279 315,285 318,294 310,288 302,294 305,285 298,279 307,279" fill="#a78bfa" opacity="0.9"/></g>
-    <circle cx="260" cy="120" r="3" fill="#e0d4ff" opacity="0.9" filter="url(#star)"/>
-    <circle cx="330" cy="160" r="2.5" fill="#c4b5fd" opacity="0.8" filter="url(#star)"/>
+    <g filter={`url(#star-${uid})`}><polygon points="295,85 299,97 312,97 302,105 306,117 295,109 284,117 288,105 278,97 291,97" fill={`url(#starG-${uid})`} opacity="0.95"/></g>
+    <g filter={`url(#star-${uid})`}><polygon points="195,55 197,62 204,62 198,67 200,74 195,69 190,74 192,67 186,62 193,62" fill="#c4b5fd" opacity="0.85"/></g>
+    <g filter={`url(#star-${uid})`}><polygon points="310,270 313,279 322,279 315,285 318,294 310,288 302,294 305,285 298,279 307,279" fill="#a78bfa" opacity="0.9"/></g>
+    <circle cx="260" cy="120" r="3" fill="#e0d4ff" opacity="0.9" filter={`url(#star-${uid})`}/>
+    <circle cx="330" cy="160" r="2.5" fill="#c4b5fd" opacity="0.8" filter={`url(#star-${uid})`}/>
     <circle cx="340" cy="230" r="2" fill="#a78bfa" opacity="0.7"/>
     <circle cx="120" cy="100" r="2" fill="#e0d4ff" opacity="0.6"/>
-    <g opacity="0.8" filter="url(#star)"><line x1="260" y1="117" x2="260" y2="123" stroke="#e0d4ff" strokeWidth="1.5"/><line x1="257" y1="120" x2="263" y2="120" stroke="#e0d4ff" strokeWidth="1.5"/></g>
+    <g opacity="0.8" filter={`url(#star-${uid})`}>
+      <line x1="260" y1="117" x2="260" y2="123" stroke="#e0d4ff" strokeWidth="1.5"/>
+      <line x1="257" y1="120" x2="263" y2="120" stroke="#e0d4ff" strokeWidth="1.5"/>
+    </g>
   </svg>
 );
 
@@ -103,11 +115,9 @@ const GlobalStyles = () => (
     input, textarea, button { font-family: inherit; }
     ::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 2px; }
 
-    /* ── Core keyframes ── */
     @keyframes twinkle { 0%,100%{opacity:0;transform:scale(.6)} 50%{opacity:.8;transform:scale(1.3)} }
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    @keyframes fadeOut { from{opacity:1} to{opacity:0} }
     @keyframes pulse { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
     @keyframes pulse-slow { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.08);opacity:1} }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -115,49 +125,42 @@ const GlobalStyles = () => (
     @keyframes bounce { 0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-14px) scale(1.12)} 60%{transform:translateY(-8px) scale(1.05)} }
     @keyframes shimmer { from{opacity:.55} to{opacity:1} }
     @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes rotate3d { from{transform:perspective(800px) rotateY(-8deg) rotateX(4deg)} to{transform:perspective(800px) rotateY(8deg) rotateX(-4deg)} }
-    @keyframes orbitStar { from{transform:rotate(0deg) translateX(90px) rotate(0deg)} to{transform:rotate(360deg) translateX(90px) rotate(-360deg)} }
-    @keyframes orbitStar2 { from{transform:rotate(120deg) translateX(130px) rotate(-120deg)} to{transform:rotate(480deg) translateX(130px) rotate(-480deg)} }
-    @keyframes orbitStar3 { from{transform:rotate(240deg) translateX(70px) rotate(-240deg)} to{transform:rotate(600deg) translateX(70px) rotate(-600deg)} }
     @keyframes nebulaPulse { 0%,100%{transform:scale(1) rotate(0deg);opacity:.18} 50%{transform:scale(1.15) rotate(8deg);opacity:.28} }
     @keyframes moonGlow { 0%,100%{filter:drop-shadow(0 0 20px #7c3aed) drop-shadow(0 0 60px rgba(124,58,237,0.3))} 50%{filter:drop-shadow(0 0 40px #a78bfa) drop-shadow(0 0 100px rgba(167,139,250,0.4))} }
     @keyframes moonFloat3d {
-      0%  { transform: perspective(600px) translateY(0px)   rotateY(-6deg) rotateX(3deg) scale(1); }
-      25% { transform: perspective(600px) translateY(-12px) rotateY(0deg)  rotateX(6deg) scale(1.03); }
+      0%  { transform: perspective(600px) translateY(0px)   rotateY(-6deg) rotateX(3deg)  scale(1);    }
+      25% { transform: perspective(600px) translateY(-12px) rotateY(0deg)  rotateX(6deg)  scale(1.03); }
       50% { transform: perspective(600px) translateY(-6px)  rotateY(6deg)  rotateX(-3deg) scale(1.01); }
-      75% { transform: perspective(600px) translateY(-14px) rotateY(2deg)  rotateX(2deg) scale(1.04); }
-      100%{ transform: perspective(600px) translateY(0px)   rotateY(-6deg) rotateX(3deg) scale(1); }
+      75% { transform: perspective(600px) translateY(-14px) rotateY(2deg)  rotateX(2deg)  scale(1.04); }
+      100%{ transform: perspective(600px) translateY(0px)   rotateY(-6deg) rotateX(3deg)  scale(1);    }
     }
-    @keyframes particleDrift {
-      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 1; }
-      100% { transform: translateY(-120px) translateX(var(--dx, 20px)) scale(0); opacity: 0; }
-    }
-    @keyframes ringExpand {
-      0%   { transform: scale(0.6); opacity: 0.7; }
-      100% { transform: scale(2.2); opacity: 0; }
-    }
-    @keyframes gradientShift {
-      0%,100% { background-position: 0% 50%; }
-      50%     { background-position: 100% 50%; }
-    }
-    @keyframes screenSlideOut { from{opacity:1;transform:translateY(0) scale(1)} to{opacity:0;transform:translateY(-40px) scale(0.96)} }
-    @keyframes screenSlideIn  { from{opacity:0;transform:translateY(40px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes orbitStar  { from{transform:rotate(0deg)   translateX(90px)  rotate(0deg)}   to{transform:rotate(360deg)  translateX(90px)  rotate(-360deg)}  }
+    @keyframes orbitStar2 { from{transform:rotate(120deg) translateX(130px) rotate(-120deg)} to{transform:rotate(480deg)  translateX(130px) rotate(-480deg)} }
+    @keyframes orbitStar3 { from{transform:rotate(240deg) translateX(70px)  rotate(-240deg)} to{transform:rotate(600deg)  translateX(70px)  rotate(-600deg)} }
+    @keyframes ringExpand { 0%{transform:scale(0.6);opacity:0.7} 100%{transform:scale(2.2);opacity:0} }
+    @keyframes screenSlideOut { from{opacity:1;transform:translateY(0) scale(1)}    to{opacity:0;transform:translateY(-40px) scale(0.96)} }
+    @keyframes screenSlideIn  { from{opacity:0;transform:translateY(40px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)}    }
     @keyframes reasonPop { 0%{transform:scale(0.8);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
   `}</style>
 );
 
+/* ── NEBULA BACKGROUND ── */
+function NebulaBackground() {
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
+      <div style={{ position: "absolute", top: "-30%", left: "-20%", width: "80vw", height: "80vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(88,28,220,0.14) 0%, rgba(59,18,120,0.07) 50%, transparent 70%)", animation: "nebulaPulse 12s ease-in-out infinite" }} />
+      <div style={{ position: "absolute", bottom: "-25%", right: "-15%", width: "70vw", height: "70vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(30,60,180,0.11) 0%, rgba(20,40,120,0.05) 50%, transparent 70%)", animation: "nebulaPulse 15s 3s ease-in-out infinite" }} />
+      <div style={{ position: "absolute", top: "30%", right: "10%", width: "40vw", height: "40vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(140,40,180,0.09) 0%, transparent 70%)", animation: "nebulaPulse 10s 6s ease-in-out infinite" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "35%", background: "linear-gradient(to top, rgba(60,20,120,0.12), transparent)" }} />
+    </div>
+  );
+}
+
 /* ── PARTICLE FIELD ── */
 function ParticleField({ count = 80 }) {
   const particles = Array.from({ length: count }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: 20 + Math.random() * 80,
-    size: Math.random() * 2.5 + 0.4,
-    delay: Math.random() * 6,
-    dur: Math.random() * 4 + 3,
-    dx: (Math.random() - 0.5) * 60,
+    id: i, x: Math.random() * 100, y: 10 + Math.random() * 85,
+    size: Math.random() * 2.5 + 0.4, delay: Math.random() * 6, dur: Math.random() * 4 + 3,
   }));
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
@@ -166,31 +169,15 @@ function ParticleField({ count = 80 }) {
           position: "absolute", left: `${p.x}%`, top: `${p.y}%`,
           width: p.size, height: p.size, borderRadius: "50%",
           background: p.size > 1.8 ? "rgba(196,181,253,0.9)" : "white",
-          opacity: 0,
-          "--dx": `${p.dx}px`,
-          animation: `twinkle ${p.dur}s ${p.delay}s infinite ease-in-out`,
+          opacity: 0, animation: `twinkle ${p.dur}s ${p.delay}s infinite ease-in-out`,
         }} />
       ))}
     </div>
   );
 }
 
-/* ── NEBULA BACKGROUND ── */
-function NebulaBackground() {
-  return (
-    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-      {/* deep nebula blobs */}
-      <div style={{ position: "absolute", top: "-30%", left: "-20%", width: "80vw", height: "80vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(88,28,220,0.12) 0%, rgba(59,18,120,0.06) 50%, transparent 70%)", animation: "nebulaPulse 12s ease-in-out infinite" }} />
-      <div style={{ position: "absolute", bottom: "-25%", right: "-15%", width: "70vw", height: "70vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(30,60,180,0.1) 0%, rgba(20,40,120,0.05) 50%, transparent 70%)", animation: "nebulaPulse 15s 3s ease-in-out infinite" }} />
-      <div style={{ position: "absolute", top: "30%", right: "10%", width: "40vw", height: "40vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(140,40,180,0.08) 0%, transparent 70%)", animation: "nebulaPulse 10s 6s ease-in-out infinite" }} />
-      {/* horizon glow */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "35%", background: "linear-gradient(to top, rgba(60,20,120,0.15), transparent)" }} />
-    </div>
-  );
-}
-
-/* ── 3D MOON HERO ── */
-function Moon3D({ size = 180, orbitStars = true }) {
+/* ── 3D MOON ── */
+function Moon3D({ size = 180, orbitStars = true, uid = "moon" }) {
   return (
     <div style={{ position: "relative", width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
       {/* Pulsing rings */}
@@ -215,9 +202,52 @@ function Moon3D({ size = 180, orbitStars = true }) {
           </div>
         </div>
       )}
-      {/* Moon itself */}
+      {/* Moon */}
       <div style={{ animation: "moonFloat3d 7s ease-in-out infinite, moonGlow 4s ease-in-out infinite", zIndex: 2 }}>
-        <LunaLogoSVG size={size} />
+        <LunaLogoSVG size={size} uid={uid} />
+      </div>
+    </div>
+  );
+}
+
+/* ── STAR FIELD ── */
+function StarField() {
+  const stars = Array.from({ length: 90 }, (_, i) => ({
+    id: i, x: Math.random() * 100, y: Math.random() * 100,
+    size: Math.random() * 2 + 0.4, delay: Math.random() * 5, dur: Math.random() * 4 + 2,
+  }));
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+      {stars.map((s) => (
+        <div key={s.id} style={{ position: "absolute", left: `${s.x}%`, top: `${s.y}%`, width: s.size, height: s.size, borderRadius: "50%", background: "white", opacity: 0, animation: `twinkle ${s.dur}s ${s.delay}s infinite ease-in-out` }} />
+      ))}
+    </div>
+  );
+}
+
+/* ── SPLASH SCREEN ── */
+function SplashScreen() {
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "var(--bg)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.4s ease" }}>
+      <NebulaBackground />
+      <ParticleField count={60} />
+      <div style={{ zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Moon3D size={190} orbitStars uid="splash" />
+        <div style={{ textAlign: "center", marginTop: 4, animation: "slideUp 0.9s 0.4s ease both" }}>
+          <h1 style={{
+            fontFamily: "var(--font-display)", fontSize: 54, fontWeight: 300, fontStyle: "italic",
+            letterSpacing: 8, lineHeight: 1, marginBottom: 10,
+            background: "linear-gradient(135deg, #e0d4ff 0%, #c4b5fd 50%, #a78bfa 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            filter: "drop-shadow(0 0 30px rgba(167,139,250,0.5))",
+          }}>Luna</h1>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(180,150,255,0.6)", letterSpacing: 4, textTransform: "uppercase" }}>your safe space</p>
+        </div>
+        <div style={{ display: "flex", gap: 10, marginTop: 52, animation: "slideUp 0.9s 0.8s ease both" }}>
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === 1 ? "rgba(196,181,253,0.8)" : "rgba(139,92,246,0.5)", animation: `pulse 1.6s ${i * 0.25}s infinite ease-in-out` }} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -233,28 +263,32 @@ function OnboardingFlow({ onComplete }) {
 
   const goNext = () => {
     setLeaving(true);
-    setTimeout(() => {
-      setScreen((s) => s + 1);
-      setLeaving(false);
-      setEntering(true);
-      setTimeout(() => setEntering(false), 600);
-    }, 450);
+    setTimeout(() => { setScreen((s) => s + 1); setLeaving(false); setEntering(true); setTimeout(() => setEntering(false), 600); }, 450);
   };
 
   const handleComplete = () => {
     setLeaving(true);
-    setTimeout(() => {
-      const userData = { name: name.trim() || "you", reasons: selectedReasons };
-      storage.set("luna_user", userData);
-      onComplete(userData);
-    }, 450);
+    setTimeout(() => { const userData = { name: name.trim() || "you", reasons: selectedReasons }; storage.set("luna_user", userData); onComplete(userData); }, 450);
   };
 
-  const toggleReason = (label) => {
-    setSelectedReasons((prev) => prev.includes(label) ? prev.filter((r) => r !== label) : [...prev, label]);
-  };
+  const toggleReason = (label) => setSelectedReasons((prev) => prev.includes(label) ? prev.filter((r) => r !== label) : [...prev, label]);
 
-  const screenAnim = leaving ? "screenSlideOut 0.45s ease forwards" : entering ? "screenSlideIn 0.55s cubic-bezier(0.22,1,0.36,1) forwards" : "screenSlideIn 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
+  const screenAnim = leaving
+    ? "screenSlideOut 0.45s ease forwards"
+    : entering
+      ? "screenSlideIn 0.55s cubic-bezier(0.22,1,0.36,1) forwards"
+      : "screenSlideIn 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
+
+  const btnStyle = {
+    padding: "15px 44px", borderRadius: 50,
+    border: "1px solid rgba(167,139,250,0.35)",
+    background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(109,40,217,0.15))",
+    color: "rgba(220,200,255,0.9)", fontFamily: "var(--font-body)", fontSize: 14,
+    cursor: "pointer", letterSpacing: 2, textTransform: "uppercase",
+    backdropFilter: "blur(12px)",
+    boxShadow: "0 0 30px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+    transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)",
+  };
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "var(--bg)", overflow: "hidden" }}>
@@ -282,38 +316,26 @@ function OnboardingFlow({ onComplete }) {
       {/* Screen 1 — Welcome */}
       {screen === 1 && (
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 32px 40px", animation: screenAnim, zIndex: 2 }}>
-          <Moon3D size={200} orbitStars />
+          <Moon3D size={200} orbitStars uid="onboard1" />
           <div style={{ textAlign: "center", marginTop: 8, animation: "fadeUp 0.9s 0.3s ease both" }}>
             <h1 style={{
               fontFamily: "var(--font-display)", fontSize: 58, fontWeight: 300, fontStyle: "italic",
-              color: "rgba(255,255,255,0.95)", letterSpacing: 6, lineHeight: 1,
+              letterSpacing: 6, lineHeight: 1,
               background: "linear-gradient(135deg, #e0d4ff 0%, #c4b5fd 40%, #a78bfa 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               filter: "drop-shadow(0 0 30px rgba(167,139,250,0.4))",
             }}>Luna</h1>
             <div style={{ width: 40, height: 1, background: "linear-gradient(to right, transparent, rgba(196,181,253,0.6), transparent)", margin: "14px auto" }} />
             <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "rgba(180,150,255,0.65)", letterSpacing: 4, textTransform: "uppercase", marginBottom: 20 }}>your safe space</p>
-            <p style={{ fontFamily: "var(--font-display)", fontSize: 19, fontStyle: "italic", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, maxWidth: 280 }}>
+            <p style={{ fontFamily: "var(--font-display)", fontSize: 19, fontStyle: "italic", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, maxWidth: 280 }}>
               "a quiet corner of the night,<br />made just for you."
             </p>
           </div>
           <div style={{ marginTop: 48, animation: "fadeUp 0.9s 0.7s ease both" }}>
-            <button onClick={goNext} style={{
-              position: "relative", padding: "15px 44px", borderRadius: 50,
-              border: "1px solid rgba(167,139,250,0.35)",
-              background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(109,40,217,0.15))",
-              color: "rgba(220,200,255,0.9)", fontFamily: "var(--font-body)", fontSize: 14,
-              cursor: "pointer", letterSpacing: 2, textTransform: "uppercase",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 0 30px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
-              transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)",
-              overflow: "hidden",
-            }}
-              onMouseEnter={(e) => { e.target.style.transform = "scale(1.05)"; e.target.style.boxShadow = "0 0 50px rgba(139,92,246,0.35), inset 0 1px 0 rgba(255,255,255,0.12)"; }}
-              onMouseLeave={(e) => { e.target.style.transform = "scale(1)"; e.target.style.boxShadow = "0 0 30px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.08)"; }}
-            >
-              begin →
-            </button>
+            <button onClick={goNext} style={btnStyle}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.boxShadow = "0 0 50px rgba(139,92,246,0.35)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 0 30px rgba(139,92,246,0.15)"; }}
+            >begin →</button>
           </div>
         </div>
       )}
@@ -321,61 +343,39 @@ function OnboardingFlow({ onComplete }) {
       {/* Screen 2 — Name */}
       {screen === 2 && (
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 32px 40px", animation: screenAnim, zIndex: 2 }}>
-          <div style={{ animation: "moonFloat3d 7s ease-in-out infinite, moonGlow 4s ease-in-out infinite", marginBottom: 36 }}>
-            <div style={{ fontSize: 72, lineHeight: 1 }}>🌙</div>
-          </div>
+          <div style={{ animation: "moonFloat3d 7s ease-in-out infinite, moonGlow 4s ease-in-out infinite", marginBottom: 36, fontSize: 72, lineHeight: 1 }}>🌙</div>
           <div style={{ textAlign: "center", width: "100%", maxWidth: 340, animation: "fadeUp 0.7s 0.1s ease both" }}>
             <h2 style={{
               fontFamily: "var(--font-display)", fontSize: 42, fontWeight: 300, fontStyle: "italic",
-              color: "rgba(255,255,255,0.92)", lineHeight: 1.25, marginBottom: 10,
+              lineHeight: 1.25, marginBottom: 10,
               background: "linear-gradient(135deg, #f0eaff, #c4b5fd)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             }}>what should<br />Luna call you?</h2>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "rgba(255,255,255,0.3)", marginBottom: 36, letterSpacing: 0.5 }}>she'll remember this always ✦</p>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "rgba(255,255,255,0.28)", marginBottom: 36 }}>she'll remember this always ✦</p>
             <div style={{ position: "relative", marginBottom: 32 }}>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && goNext()}
-                placeholder="your name..."
-                autoFocus
+              <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && goNext()}
+                placeholder="your name..." autoFocus
                 style={{
                   width: "100%", padding: "18px 24px", borderRadius: 16, textAlign: "center",
-                  border: "1px solid rgba(167,139,250,0.2)",
-                  background: "rgba(139,92,246,0.06)",
-                  color: "rgba(255,255,255,0.92)",
-                  fontFamily: "var(--font-display)", fontSize: 26, outline: "none",
-                  letterSpacing: 3, backdropFilter: "blur(8px)",
-                  boxShadow: "0 0 0 0 rgba(139,92,246,0)",
-                  transition: "all 0.3s ease", WebkitAppearance: "none",
-                  caretColor: "#a78bfa",
+                  border: "1px solid rgba(167,139,250,0.2)", background: "rgba(139,92,246,0.06)",
+                  color: "rgba(255,255,255,0.92)", fontFamily: "var(--font-display)", fontSize: 26,
+                  outline: "none", letterSpacing: 3, backdropFilter: "blur(8px)",
+                  transition: "all 0.3s ease", WebkitAppearance: "none", caretColor: "#a78bfa",
                 }}
-                onFocus={(e) => {
-                  e.target.style.border = "1px solid rgba(167,139,250,0.5)";
-                  e.target.style.boxShadow = "0 0 30px rgba(139,92,246,0.15), 0 0 0 1px rgba(167,139,250,0.1)";
-                  e.target.style.background = "rgba(139,92,246,0.1)";
-                }}
-                onBlur={(e) => {
-                  e.target.style.border = "1px solid rgba(167,139,250,0.2)";
-                  e.target.style.boxShadow = "none";
-                  e.target.style.background = "rgba(139,92,246,0.06)";
-                }}
+                onFocus={(e) => { e.target.style.border = "1px solid rgba(167,139,250,0.5)"; e.target.style.boxShadow = "0 0 30px rgba(139,92,246,0.15)"; e.target.style.background = "rgba(139,92,246,0.1)"; }}
+                onBlur={(e) => { e.target.style.border = "1px solid rgba(167,139,250,0.2)"; e.target.style.boxShadow = "none"; e.target.style.background = "rgba(139,92,246,0.06)"; }}
               />
-              {name && <div style={{ position: "absolute", right: 18, top: "50%", transform: "translateY(-50%)", fontSize: 18, animation: "fadeIn 0.3s ease" }}>✨</div>}
+              {name && <div style={{ position: "absolute", right: 18, top: "50%", transform: "translateY(-50%)", fontSize: 18 }}>✨</div>}
             </div>
             <button onClick={goNext} style={{
               width: "100%", padding: "16px", borderRadius: 14,
               border: "1px solid rgba(167,139,250,0.3)",
               background: name.trim() ? "linear-gradient(135deg, rgba(139,92,246,0.35), rgba(109,40,217,0.25))" : "rgba(255,255,255,0.04)",
               color: name.trim() ? "rgba(220,200,255,0.95)" : "rgba(255,255,255,0.3)",
-              fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer",
-              letterSpacing: 1.5, textTransform: "uppercase",
-              backdropFilter: "blur(8px)",
-              boxShadow: name.trim() ? "0 0 25px rgba(139,92,246,0.2)" : "none",
+              fontFamily: "var(--font-body)", fontSize: 14, cursor: "pointer", letterSpacing: 1.5, textTransform: "uppercase",
+              backdropFilter: "blur(8px)", boxShadow: name.trim() ? "0 0 25px rgba(139,92,246,0.2)" : "none",
               transition: "all 0.4s cubic-bezier(0.22,1,0.36,1)",
-            }}>
-              {name.trim() ? `hi ${name.trim()} ✦ continue →` : "skip →"}
-            </button>
+            }}>{name.trim() ? `hi ${name.trim()} ✦ continue →` : "skip →"}</button>
           </div>
         </div>
       )}
@@ -383,19 +383,15 @@ function OnboardingFlow({ onComplete }) {
       {/* Screen 3 — Reasons */}
       {screen === 3 && (
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 24px 40px", animation: screenAnim, zIndex: 2, overflowY: "auto" }}>
-          <div style={{ animation: "moonFloat3d 7s ease-in-out infinite, moonGlow 4s ease-in-out infinite", marginBottom: 28 }}>
-            <div style={{ fontSize: 56, lineHeight: 1 }}>🌒</div>
-          </div>
+          <div style={{ animation: "moonFloat3d 7s ease-in-out infinite, moonGlow 4s ease-in-out infinite", marginBottom: 28, fontSize: 56, lineHeight: 1 }}>🌒</div>
           <div style={{ textAlign: "center", width: "100%", maxWidth: 380, animation: "fadeUp 0.7s 0.1s ease both" }}>
             <h2 style={{
               fontFamily: "var(--font-display)", fontSize: 38, fontWeight: 300, fontStyle: "italic",
-              color: "rgba(255,255,255,0.92)", lineHeight: 1.3, marginBottom: 8,
+              lineHeight: 1.3, marginBottom: 8,
               background: "linear-gradient(135deg, #f0eaff, #c4b5fd)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            }}>
-              {name.trim() ? `what brings you\nhere, ${name.trim()}?` : "what brings you here?"}
-            </h2>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "rgba(255,255,255,0.28)", marginBottom: 30, letterSpacing: 0.5 }}>pick all that feel true right now</p>
+            }}>{name.trim() ? `what brings you\nhere, ${name.trim()}?` : "what brings you here?"}</h2>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "rgba(255,255,255,0.28)", marginBottom: 30 }}>pick all that feel true right now</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 32 }}>
               {REASONS.map((r, i) => {
                 const chosen = selectedReasons.includes(r.label);
@@ -403,13 +399,11 @@ function OnboardingFlow({ onComplete }) {
                   <button key={r.label} onClick={() => toggleReason(r.label)} style={{
                     padding: "11px 20px", borderRadius: 28,
                     border: chosen ? "1px solid rgba(196,181,253,0.6)" : "1px solid rgba(255,255,255,0.08)",
-                    background: chosen
-                      ? "linear-gradient(135deg, rgba(139,92,246,0.3), rgba(109,40,217,0.2))"
-                      : "rgba(255,255,255,0.03)",
+                    background: chosen ? "linear-gradient(135deg, rgba(139,92,246,0.3), rgba(109,40,217,0.2))" : "rgba(255,255,255,0.03)",
                     color: chosen ? "rgba(220,200,255,0.95)" : "rgba(255,255,255,0.45)",
                     fontFamily: "var(--font-body)", fontSize: 13, cursor: "pointer",
                     backdropFilter: "blur(6px)",
-                    boxShadow: chosen ? "0 0 20px rgba(139,92,246,0.2), inset 0 1px 0 rgba(255,255,255,0.1)" : "none",
+                    boxShadow: chosen ? "0 0 20px rgba(139,92,246,0.2)" : "none",
                     transform: chosen ? "scale(1.06) translateY(-1px)" : "scale(1)",
                     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
                     animation: `reasonPop 0.4s ${i * 0.05}s ease both`,
@@ -426,46 +420,15 @@ function OnboardingFlow({ onComplete }) {
               background: "linear-gradient(135deg, rgba(139,92,246,0.35), rgba(109,40,217,0.25))",
               color: "rgba(220,200,255,0.95)", fontFamily: "var(--font-body)", fontSize: 14,
               cursor: "pointer", letterSpacing: 2, textTransform: "uppercase",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 0 40px rgba(139,92,246,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+              backdropFilter: "blur(12px)", boxShadow: "0 0 40px rgba(139,92,246,0.25)",
               transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)",
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 0 60px rgba(139,92,246,0.4), inset 0 1px 0 rgba(255,255,255,0.15)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 0 40px rgba(139,92,246,0.25), inset 0 1px 0 rgba(255,255,255,0.1)"; }}
-            >
-              enter Luna ✦
-            </button>
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 0 60px rgba(139,92,246,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 0 40px rgba(139,92,246,0.25)"; }}
+            >enter Luna ✦</button>
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-/* ── SPLASH ── */
-function SplashScreen() {
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "var(--bg)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.4s ease" }}>
-      <NebulaBackground />
-      <ParticleField count={60} />
-      <div style={{ zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Moon3D size={190} orbitStars />
-        <div style={{ textAlign: "center", marginTop: 4, animation: "slideUp 0.9s 0.4s ease both" }}>
-          <h1 style={{
-            fontFamily: "var(--font-display)", fontSize: 54, fontWeight: 300, fontStyle: "italic",
-            letterSpacing: 8, lineHeight: 1, marginBottom: 10,
-            background: "linear-gradient(135deg, #e0d4ff 0%, #c4b5fd 50%, #a78bfa 100%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 0 30px rgba(167,139,250,0.5))",
-          }}>Luna</h1>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "rgba(180,150,255,0.6)", letterSpacing: 4, textTransform: "uppercase" }}>your safe space</p>
-        </div>
-        <div style={{ display: "flex", gap: 10, marginTop: 52, animation: "slideUp 0.9s 0.8s ease both" }}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === 1 ? "rgba(196,181,253,0.8)" : "rgba(139,92,246,0.5)", animation: `pulse 1.6s ${i * 0.25}s infinite ease-in-out` }} />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
@@ -482,35 +445,21 @@ function FloatingMoon({ mood }) {
         fontSize: 30, cursor: "pointer",
         filter: `drop-shadow(0 0 14px ${avatar.glow}) drop-shadow(0 0 30px ${avatar.glow})`,
         animation: `${avatar.animation} 3.5s ease-in-out infinite`,
-        WebkitTapHighlightColor: "transparent",
-        transition: "filter 0.6s ease",
+        WebkitTapHighlightColor: "transparent", transition: "filter 0.6s ease",
       }}>{avatar.emoji}</div>
       {showMessage && (
         <div onClick={() => setShowMessage(false)} style={{
-          position: "fixed", bottom: 152, right: 14, zIndex: 99,
-          maxWidth: 210, padding: "14px 16px", borderRadius: "18px 18px 4px 18px",
-          background: "rgba(12,8,28,0.96)",
-          border: `1px solid ${avatar.glow}`,
-          backdropFilter: "blur(20px)",
-          boxShadow: `0 0 40px ${avatar.glow}`,
-          animation: "fadeUp 0.35s cubic-bezier(0.22,1,0.36,1)",
-          cursor: "pointer",
+          position: "fixed", bottom: 152, right: 14, zIndex: 99, maxWidth: 210,
+          padding: "14px 16px", borderRadius: "18px 18px 4px 18px",
+          background: "rgba(12,8,28,0.96)", border: `1px solid ${avatar.glow}`,
+          backdropFilter: "blur(20px)", boxShadow: `0 0 40px ${avatar.glow}`,
+          animation: "fadeUp 0.35s cubic-bezier(0.22,1,0.36,1)", cursor: "pointer",
         }}>
           <p style={{ fontFamily: "var(--font-display)", fontSize: 15, lineHeight: 1.65, fontStyle: "italic", color: "rgba(255,255,255,0.88)" }}>{avatar.message}</p>
           <p style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", marginTop: 8, fontFamily: "var(--font-body)", letterSpacing: 1 }}>tap to close</p>
         </div>
       )}
     </>
-  );
-}
-
-/* ── STAR FIELD ── */
-function StarField() {
-  const stars = Array.from({ length: 90 }, (_, i) => ({ id: i, x: Math.random() * 100, y: Math.random() * 100, size: Math.random() * 2 + 0.4, delay: Math.random() * 5, dur: Math.random() * 4 + 2 }));
-  return (
-    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-      {stars.map((s) => <div key={s.id} style={{ position: "absolute", left: `${s.x}%`, top: `${s.y}%`, width: s.size, height: s.size, borderRadius: "50%", background: "white", opacity: 0, animation: `twinkle ${s.dur}s ${s.delay}s infinite ease-in-out` }} />)}
-    </div>
   );
 }
 
@@ -657,7 +606,7 @@ Rules:
           onFocus={(e) => { e.target.style.border = "1px solid rgba(167,139,250,0.3)"; e.target.style.boxShadow = "0 0 20px rgba(139,92,246,0.1)"; }}
           onBlur={(e) => { e.target.style.border = "1px solid rgba(255,255,255,0.08)"; e.target.style.boxShadow = "none"; }}
         />
-        <button onClick={send} style={{ padding: "14px 20px", borderRadius: 14, border: "1px solid rgba(167,139,250,0.2)", background: "rgba(109,40,217,0.3)", color: "rgba(200,170,255,0.9)", cursor: "pointer", fontSize: 17, WebkitTapHighlightColor: "transparent", backdropFilter: "blur(8px)", boxShadow: "0 0 20px rgba(139,92,246,0.15)", transition: "all 0.3s ease" }}>↑</button>
+        <button onClick={send} style={{ padding: "14px 20px", borderRadius: 14, border: "1px solid rgba(167,139,250,0.2)", background: "rgba(109,40,217,0.3)", color: "rgba(200,170,255,0.9)", cursor: "pointer", fontSize: 17, WebkitTapHighlightColor: "transparent", backdropFilter: "blur(8px)", transition: "all 0.3s ease" }}>↑</button>
       </div>
     </div>
   );
@@ -683,7 +632,7 @@ function MoonVault() {
 
   if (selected) return (
     <div style={{ padding: "52px 24px 24px", animation: "fadeUp 0.5s cubic-bezier(0.22,1,0.36,1)" }}>
-      <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 13, marginBottom: 28, padding: 0, letterSpacing: 0.5, WebkitTapHighlightColor: "transparent" }}>← back</button>
+      <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: 13, marginBottom: 28, padding: 0, WebkitTapHighlightColor: "transparent" }}>← back</button>
       <p style={{ fontSize: 10, color: "rgba(167,139,250,0.6)", letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 14 }}>{selected.date}</p>
       <h2 style={{ fontFamily: "var(--font-display)", fontSize: 34, fontWeight: 300, fontStyle: "italic", marginBottom: 30, color: "rgba(255,255,255,0.92)", lineHeight: 1.3 }}>{selected.title}</h2>
       <p style={{ fontFamily: "var(--font-display)", fontSize: 20, lineHeight: 2.2, color: "rgba(255,255,255,0.78)", whiteSpace: "pre-wrap" }}>{selected.content}</p>
@@ -696,7 +645,7 @@ function MoonVault() {
       <div style={{ marginBottom: 34 }}>
         <p style={{ fontSize: 10, color: "rgba(167,139,250,0.65)", letterSpacing: 3, textTransform: "uppercase", marginBottom: 10 }}>for you</p>
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 300, lineHeight: 1.15, background: "linear-gradient(135deg, #f0eaff, #c4b5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}><em>Moon Vault</em> 🌙</h2>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 8 }}>words written just for you</p>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", marginTop: 8 }}>words written just for you</p>
       </div>
       {poems.length === 0 ? (
         <div style={{ textAlign: "center", padding: "50px 20px", color: "var(--muted)" }}>
@@ -710,10 +659,8 @@ function MoonVault() {
               background: "linear-gradient(135deg, rgba(88,28,220,0.08), rgba(59,18,120,0.06))",
               border: "1px solid rgba(167,139,250,0.12)", borderRadius: 20,
               padding: "22px 24px", textAlign: "left", cursor: "pointer",
-              transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)",
-              backdropFilter: "blur(8px)",
-              animation: `fadeUp 0.5s ${i * 0.07}s ease both`,
-              WebkitTapHighlightColor: "transparent",
+              transition: "all 0.35s cubic-bezier(0.22,1,0.36,1)", backdropFilter: "blur(8px)",
+              animation: `fadeUp 0.5s ${i * 0.07}s ease both`, WebkitTapHighlightColor: "transparent",
             }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.border = "1px solid rgba(167,139,250,0.25)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(88,28,220,0.15)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.border = "1px solid rgba(167,139,250,0.12)"; e.currentTarget.style.boxShadow = "none"; }}
@@ -887,9 +834,7 @@ export default function Luna() {
                 <MoodPicker onSelect={setMood} selected={mood} />
                 {mood && (
                   <div style={{ marginTop: 18, textAlign: "center", animation: "fadeUp 0.4s cubic-bezier(0.22,1,0.36,1)" }}>
-                    <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>
-                      Feeling <span style={{ color: "rgba(196,181,253,0.85)" }}>{mood.label.toLowerCase()}</span> right now
-                    </p>
+                    <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Feeling <span style={{ color: "rgba(196,181,253,0.85)" }}>{mood.label.toLowerCase()}</span> right now</p>
                     <button onClick={saveMood} style={{
                       padding: "12px 30px", borderRadius: 12, border: "none",
                       background: moodSaved ? "rgba(80,180,120,0.2)" : "rgba(139,92,246,0.25)",
@@ -917,7 +862,7 @@ export default function Luna() {
                     onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.border = "1px solid rgba(255,255,255,0.06)"; }}
                   >
                     <div style={{ fontSize: 22, marginBottom: 10 }}>{card.icon}</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.82)", fontWeight: 400, marginBottom: 3 }}>{card.label}</div>
+                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.82)", marginBottom: 3 }}>{card.label}</div>
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{card.sub}</div>
                   </button>
                 ))}
@@ -945,15 +890,15 @@ export default function Luna() {
           {tab === "journal" && (
             <div style={{ padding: "52px 20px 28px", animation: "fadeUp 0.5s cubic-bezier(0.22,1,0.36,1)" }}>
               <h2 style={{ fontFamily: "var(--font-display)", fontSize: 38, fontWeight: 300, marginBottom: 6, background: "linear-gradient(135deg, #f0eaff, #c4b5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}><em>Your pages</em></h2>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", marginBottom: 26, letterSpacing: 0.5 }}>private. yours. always.</p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", marginBottom: 26 }}>private. yours. always.</p>
               <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 20, marginBottom: 22, backdropFilter: "blur(12px)" }}>
                 <p style={{ fontSize: 10, color: "rgba(255,255,255,0.28)", letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 14 }}>new entry</p>
                 <JournalEntry onSave={saveJournal} />
               </div>
               {journals.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "32px 20px", color: "var(--muted)" }}>
+                <div style={{ textAlign: "center", padding: "32px 20px" }}>
                   <div style={{ fontSize: 36, marginBottom: 12, animation: "float 3s ease-in-out infinite" }}>🪐</div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: 17, fontStyle: "italic", color: "rgba(255,255,255,0.35)" }}>Your thoughts are waiting to land here.</p>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: 17, fontStyle: "italic", color: "rgba(255,255,255,0.3)" }}>Your thoughts are waiting to land here.</p>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -973,10 +918,10 @@ export default function Luna() {
               <h2 style={{ fontFamily: "var(--font-display)", fontSize: 38, fontWeight: 300, marginBottom: 6, background: "linear-gradient(135deg, #f0eaff, #c4b5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}><em>Your waves</em></h2>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", marginBottom: 30 }}>every feeling you've logged</p>
               {moodHistory.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "44px 20px", color: "var(--muted)" }}>
+                <div style={{ textAlign: "center", padding: "44px 20px" }}>
                   <div style={{ fontSize: 44, marginBottom: 14, animation: "float 3s ease-in-out infinite" }}>🌊</div>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: 20, fontStyle: "italic", marginBottom: 10, color: "rgba(255,255,255,0.4)" }}>No moods logged yet.</p>
-                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.25)" }}>Head to Home and check in with how you're feeling.</p>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: 20, fontStyle: "italic", color: "rgba(255,255,255,0.35)", marginBottom: 10 }}>No moods logged yet.</p>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.22)" }}>Head to Home and check in.</p>
                 </div>
               ) : (
                 <>
@@ -994,7 +939,7 @@ export default function Luna() {
                         <span style={{ fontSize: 24 }}>{m.emoji}</span>
                         <div>
                           <p style={{ fontSize: 14, color: "rgba(255,255,255,0.82)" }}>{m.label}</p>
-                          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.28)", marginTop: 2, letterSpacing: 0.5 }}>{m.time}</p>
+                          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.28)", marginTop: 2 }}>{m.time}</p>
                         </div>
                       </div>
                     ))}
@@ -1009,7 +954,7 @@ export default function Luna() {
 
         <nav style={{
           position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-          background: "rgba(6,6,16,0.9)", backdropFilter: "blur(24px)",
+          background: "rgba(6,6,16,0.92)", backdropFilter: "blur(24px)",
           borderTop: "1px solid rgba(255,255,255,0.05)",
           display: "flex", justifyContent: "space-around",
           padding: "10px 0", paddingBottom: "max(14px, env(safe-area-inset-bottom))",
