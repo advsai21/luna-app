@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    volumes:
+      # service-account.json stays on your machine, never baked into the image
+      - ./backend/service-account.json:/app/service-account.json:ro
+    environment:
+      FIREBASE_SERVICE_ACCOUNT_JSON: /app/service-account.json
+      ALLOWED_ORIGINS: http://localhost:8080
+    ports: ["8000:8000"]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY}
+        VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN}
+        VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID}
+    ports: ["8080:80"]
+    depends_on: [backend]
