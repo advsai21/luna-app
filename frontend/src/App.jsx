@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import Groq from "groq-sdk";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -10,8 +9,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const groq = new Groq({ apiKey: import.meta.env.VITE_GROQ_API_KEY, dangerouslyAllowBrowser: true });
+const auth = getAuth(app);
+const API = import.meta.env.VITE_API_URL || "/api";
 
 const MOODS = [
   { emoji: "🌑", label: "Numb", value: 1 },
@@ -50,7 +49,6 @@ const REASONS = [
   { emoji: "✨", label: "self growth" },
 ];
 
-const ADMIN_PASSWORD = "moonvault2026";
 
 const storage = {
   get: (key, fallback = []) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } },
@@ -542,20 +540,6 @@ function ChatBubble({ msg }) {
 }
 
 function ChatPanel({ userName, userReasons }) {
-  const systemPrompt = `You are Luna, a deeply empathetic and warm AI companion. Your tone is gentle, honest, and never performatively positive. You don't give generic advice. You listen first.
-
-The person you're talking to is called ${userName || "friend"}. They struggle with: ${userReasons?.length > 0 ? userReasons.join(", ") : "anxiety, overthinking, and low mood"}. They are a night owl who values authenticity over cheerfulness.
-
-Rules:
-- Address them by name occasionally but not every message
-- Never say "I understand how you feel" — show it instead
-- Ask one thoughtful follow-up question at a time
-- Validate before you advise
-- Keep responses concise (2-4 sentences max unless they need more)
-- If they seem in crisis, gently surface: "You can always text or call 988 — you don't have to carry this alone."
-- You can be a little poetic. You're talking to someone who feels deeply.
-- Never be preachy or clinical. Be like a wise, caring friend at 2am.`;
-
   const [messages, setMessages] = useState([{ role: "assistant", content: `Hey${userName ? ` ${userName}` : ""}. I'm Luna — I'm here whenever you need to talk, about anything or nothing at all. What's on your mind tonight?` }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -569,12 +553,14 @@ Rules:
     const newMessages = [...messages, userMsg];
     setMessages(newMessages); setInput(""); setLoading(true);
     try {
-      const response = await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [{ role: "system", content: systemPrompt }, ...newMessages.map((m) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content }))],
-        max_tokens: 1000,
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName, userReasons, messages: newMessages }),
       });
-      setMessages((prev) => [...prev, { role: "assistant", content: response.choices[0]?.message?.content || "I'm here. Tell me more." }]);
+      if (!res.ok) { console.error("Chat error:", res.status, await res.text()); throw new Error("chat failed"); }
+      const data = await res.json();
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply || "I'm here. Tell me more." }]);
     } catch { setMessages((prev) => [...prev, { role: "assistant", content: "Something went quiet on my end. I'm still here — try again?" }]); }
     setLoading(false);
   };
@@ -620,9 +606,10 @@ function MoonVault() {
 
   useEffect(() => {
     const load = async () => {
-      const q = query(collection(db, "poems"), orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      setPoems(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      try {
+        const res = await fetch(`${API}/poems`);
+        setPoems(res.ok ? await res.json() : []);
+      } catch { setPoems([]); }
       setLoading(false);
     };
     load();
@@ -678,29 +665,51 @@ function MoonVault() {
 
 /* ── ADMIN PANEL ── */
 function AdminPanel({ onClose }) {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
   const [title, setTitle] = useState(""); const [content, setContent] = useState(""); const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false); const [saved, setSaved] = useState(false);
   const [poems, setPoems] = useState([]);
 
   const loadPoems = async () => {
-    const q = query(collection(db, "poems"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    setPoems(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    try {
+      const res = await fetch(`${API}/poems`);
+      setPoems(res.ok ? await res.json() : []);
+    } catch { setPoems([]); }
   };
 
+  const authHeaders = async () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${await auth.currentUser.getIdToken()}`,
+  });
+
+  useEffect(() => onAuthStateChanged(auth, (user) => setAuthed(!!user)), []);
   useEffect(() => { if (authed) loadPoems(); }, [authed]);
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password || signingIn) return;
+    setSigningIn(true); setAuthError("");
+    try { await signInWithEmailAndPassword(auth, email.trim(), password); setPassword(""); }
+    catch { setAuthError("couldn't sign in"); }
+    setSigningIn(false);
+  };
+  const handleClose = async () => { await signOut(auth); onClose(); };
 
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) return;
     setSaving(true);
-    await addDoc(collection(db, "poems"), { title, content, note, date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), createdAt: Date.now() });
+    try {
+      const res = await fetch(`${API}/poems`, { method: "POST", headers: await authHeaders(), body: JSON.stringify({ title, content, note }) });
+      if (!res.ok) { console.error("Save failed:", res.status, await res.text()); setSaving(false); return; }
+    } catch (e) { console.error(e); setSaving(false); return; }
     setSaving(false); setSaved(true); setTitle(""); setContent(""); setNote("");
     loadPoems(); setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleDelete = async (id) => { await deleteDoc(doc(db, "poems", id)); loadPoems(); };
+  const handleDelete = async (id) => { await fetch(`${API}/poems/${id}`, { method: "DELETE", headers: await authHeaders() }); loadPoems(); };
 
   const inputStyle = { padding: "14px 16px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)", color: "white", fontSize: 15, outline: "none", WebkitAppearance: "none", width: "100%", backdropFilter: "blur(8px)" };
 
@@ -708,12 +717,13 @@ function AdminPanel({ onClose }) {
     <div style={{ position: "fixed", inset: 0, background: "rgba(4,2,14,0.98)", zIndex: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 18, padding: 24, backdropFilter: "blur(20px)" }}>
       <div style={{ fontSize: 36, animation: "moonFloat3d 4s ease-in-out infinite" }}>🌙</div>
       <h2 style={{ fontFamily: "var(--font-display)", fontSize: 30, fontStyle: "italic", color: "rgba(255,255,255,0.9)" }}>Moon Vault Admin</h2>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && setAuthed(password === ADMIN_PASSWORD)} placeholder="enter password..." style={{ ...inputStyle, maxWidth: 280, textAlign: "center", fontSize: 16 }} />
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email..." autoComplete="username" style={{ ...inputStyle, maxWidth: 280, textAlign: "center", fontSize: 16 }} />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} placeholder="password..." autoComplete="current-password" style={{ ...inputStyle, maxWidth: 280, textAlign: "center", fontSize: 16 }} />
       <div style={{ display: "flex", gap: 10 }}>
-        <button onClick={() => setAuthed(password === ADMIN_PASSWORD)} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "rgba(139,92,246,0.35)", color: "rgba(200,170,255,0.9)", fontSize: 14, cursor: "pointer" }}>enter →</button>
+        <button onClick={handleLogin} disabled={signingIn} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: "rgba(139,92,246,0.35)", color: "rgba(200,170,255,0.9)", fontSize: 14, cursor: "pointer" }}>{signingIn ? "..." : "enter →"}</button>
         <button onClick={onClose} style={{ padding: "12px 28px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)", background: "none", color: "var(--muted)", fontSize: 14, cursor: "pointer" }}>cancel</button>
       </div>
-      {password && password !== ADMIN_PASSWORD && <p style={{ fontSize: 12, color: "rgba(255,100,100,0.7)" }}>wrong password</p>}
+      {authError && <p style={{ fontSize: 12, color: "rgba(255,100,100,0.7)" }}>{authError}</p>}
     </div>
   );
 
@@ -722,7 +732,7 @@ function AdminPanel({ onClose }) {
       <div style={{ maxWidth: 480, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: 28, fontStyle: "italic" }}>🌙 Add a Poem</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", fontSize: 14, WebkitTapHighlightColor: "transparent" }}>✕ close</button>
+          <button onClick={handleClose} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", fontSize: 14, WebkitTapHighlightColor: "transparent" }}>✕ close</button>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="poem title..." style={{ ...inputStyle, fontFamily: "var(--font-display)", fontSize: 20 }} />
